@@ -1,0 +1,794 @@
+/* ============================================================
+   TaskFlow — Student Task Manager
+   style.css
+   Aesthetic: Dark Academia / Editorial
+   Palette: Deep ink navy + warm cream + amber accent
+   ============================================================ */
+
+/* ── 1. CSS Custom Properties ── */
+:root {
+  /* Core palette */
+  --ink:          #0f1117;       /* near-black background */
+  --ink-2:        #181c27;       /* card surface */
+  --ink-3:        #222840;       /* card border / input bg */
+  --mist:         #2e3554;       /* subtle dividers */
+  --chalk:        #e8e4d9;       /* primary text (warm cream) */
+  --chalk-dim:    #9993a4;       /* secondary text */
+  --chalk-faint:  #4a4762;       /* placeholder / disabled */
+
+  /* Accent */
+  --amber:        #f0a04b;       /* primary accent */
+  --amber-glow:   rgba(240,160,75,.18);
+  --amber-dark:   #b8722a;
+
+  /* Priority colours */
+  --high:         #e05c5c;
+  --medium:       #f0a04b;
+  --low:          #5cb8a0;
+
+  /* Semantic */
+  --success:      #5cb8a0;
+  --danger:       #e05c5c;
+
+  /* Layout */
+  --sidebar-w:    240px;
+  --topbar-h:     72px;
+  --radius-sm:    8px;
+  --radius-md:    14px;
+  --radius-lg:    20px;
+
+  /* Typography */
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+
+  /* Transitions */
+  --ease:         cubic-bezier(.25,.46,.45,.94);
+  --spring:       cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ── 2. Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--ink);
+  color: var(--chalk);
+  min-height: 100dvh;
+  display: flex;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 3. Noise Grain Overlay ── */
+/* Creates a subtle film-grain texture that elevates the depth */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: .032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 180px;
+}
+
+/* ── 4. Sidebar ── */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-w);
+  height: 100dvh;
+  background: var(--ink-2);
+  border-right: 1px solid var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 20px;
+  gap: 32px;
+  z-index: 200;
+  transition: transform .3s var(--ease);
+}
+
+/* Brand lockup */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 2px;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 10px var(--amber);
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  color: var(--chalk);
+  letter-spacing: .01em;
+}
+
+/* Nav items */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--chalk-dim);
+  font-family: var(--font-body);
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  text-align: left;
+}
+
+.nav-item i { font-size: 1.05rem; flex-shrink: 0; }
+
+.nav-item .nav-badge {
+  margin-left: auto;
+  background: var(--ink-3);
+  color: var(--chalk-dim);
+  font-size: .7rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 100px;
+  min-width: 22px;
+  text-align: center;
+  transition: background .2s, color .2s;
+}
+
+.nav-item:hover {
+  background: var(--ink-3);
+  color: var(--chalk);
+}
+
+.nav-item.active {
+  background: var(--amber-glow);
+  color: var(--amber);
+}
+
+.nav-item.active .nav-badge {
+  background: var(--amber);
+  color: var(--ink);
+}
+
+/* Legend */
+.sidebar-legend {
+  margin-top: auto;
+}
+
+.legend-title {
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--chalk-faint);
+  margin-bottom: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .8rem;
+  color: var(--chalk-dim);
+  margin-bottom: 6px;
+}
+
+/* Priority dots (shared across sidebar + cards) */
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-high   { background: var(--high); }
+.dot-medium { background: var(--medium); }
+.dot-low    { background: var(--low); }
+
+/* Progress ring */
+.sidebar-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--ink-3);
+  border-radius: var(--radius-md);
+}
+
+.progress-ring {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  transform: rotate(-90deg);
+}
+
+.ring-track {
+  fill: none;
+  stroke: var(--mist);
+  stroke-width: 5;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 5;
+  stroke-linecap: round;
+  /* circumference ≈ 201 — set via JS */
+  stroke-dasharray: 201;
+  stroke-dashoffset: 201;
+  transition: stroke-dashoffset .6s var(--ease);
+}
+
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.progress-pct {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--chalk);
+}
+
+.progress-label {
+  font-size: .75rem;
+  color: var(--chalk-dim);
+}
+
+/* ── 5. Main Content Area ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 0 clamp(20px, 4vw, 60px) 60px;
+}
+
+/* ── 6. Topbar ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--topbar-h);
+  padding: 0 4px;
+  position: sticky;
+  top: 0;
+  background: var(--ink);
+  z-index: 100;
+  border-bottom: 1px solid var(--ink-3);
+  margin-bottom: 32px;
+}
+
+.menu-toggle {
+  display: none; /* shown on mobile */
+  background: none;
+  border: none;
+  color: var(--chalk);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: background .2s;
+}
+.menu-toggle:hover { background: var(--ink-3); }
+
+.topbar-meta { flex: 1; }
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--chalk);
+}
+
+.page-date {
+  font-size: .78rem;
+  color: var(--chalk-faint);
+  margin-top: 2px;
+}
+
+/* Ghost button (used in topbar) */
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--chalk-dim);
+  font-family: var(--font-body);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+  white-space: nowrap;
+}
+.btn-ghost:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(224,92,92,.07);
+}
+
+/* ── 7. Add Task Form ── */
+.add-task-section {
+  margin-bottom: 36px;
+}
+
+.add-task-form {
+  background: var(--ink-2);
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow .3s;
+}
+
+.add-task-form:focus-within {
+  box-shadow: 0 0 0 2px var(--amber-glow), 0 8px 32px rgba(0,0,0,.3);
+}
+
+/* Shared input group pattern */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--chalk-faint);
+  font-size: 1rem;
+  pointer-events: none;
+  transition: color .2s;
+}
+
+.input-group:focus-within .input-icon { color: var(--amber); }
+
+.form-input {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  background: var(--ink-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--chalk);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  outline: none;
+  transition: border-color .2s, background .2s;
+}
+
+.form-input::placeholder { color: var(--chalk-faint); }
+
+.form-input:focus {
+  border-color: var(--amber);
+  background: var(--ink-2);
+}
+
+/* Date input colour fix for dark theme */
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(.5);
+  cursor: pointer;
+}
+
+.form-input--sm { font-size: .85rem; padding: 8px 12px 8px 34px; }
+
+/* Second form row */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.input-subject { flex: 1; min-width: 150px; }
+.input-date    { flex: 0 0 160px; }
+
+/* Priority selector */
+.priority-select {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.priority-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius-sm);
+  background: var(--ink-3);
+  color: var(--chalk-dim);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+}
+
+.priority-btn:hover { border-color: var(--chalk-faint); color: var(--chalk); }
+
+.priority-btn.active { border-color: var(--amber); color: var(--amber); background: var(--amber-glow); }
+
+/* Add button */
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  background: var(--amber);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: .875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s, transform .15s var(--spring), box-shadow .2s;
+  flex-shrink: 0;
+}
+
+.btn-add:hover {
+  background: var(--amber-dark);
+  box-shadow: 0 4px 16px rgba(240,160,75,.35);
+  transform: translateY(-1px);
+}
+
+.btn-add:active { transform: translateY(0); }
+
+/* Form error */
+.form-error {
+  font-size: .78rem;
+  color: var(--danger);
+  min-height: 1em;
+  padding-left: 4px;
+}
+
+/* ── 8. Task Toolbar ── */
+.task-section { display: flex; flex-direction: column; gap: 20px; }
+
+.task-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-group { flex: 1; min-width: 160px; }
+
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sort-label {
+  font-size: .78rem;
+  color: var(--chalk-faint);
+  white-space: nowrap;
+}
+
+.sort-select {
+  padding: 8px 12px;
+  background: var(--ink-2);
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius-sm);
+  color: var(--chalk);
+  font-family: var(--font-body);
+  font-size: .82rem;
+  cursor: pointer;
+  outline: none;
+}
+.sort-select:focus { border-color: var(--amber); }
+
+/* ── 9. Task List & Cards ── */
+.task-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Each task card */
+.task-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--ink-2);
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius-md);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+
+  /* Entry animation */
+  animation: slideIn .35s var(--spring) both;
+  transition: box-shadow .25s, border-color .25s, transform .2s var(--ease);
+}
+
+/* Priority left-edge accent bar */
+.task-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--chalk-faint);
+  transition: background .2s;
+}
+.task-card[data-priority="high"]::before   { background: var(--high);   }
+.task-card[data-priority="medium"]::before { background: var(--medium); }
+.task-card[data-priority="low"]::before    { background: var(--low);    }
+
+.task-card:hover {
+  border-color: var(--mist);
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  transform: translateY(-1px);
+}
+
+/* Completed state */
+.task-card.completed {
+  opacity: .55;
+}
+.task-card.completed .task-title { text-decoration: line-through; color: var(--chalk-dim); }
+.task-card.completed::before     { opacity: .4; }
+
+/* Checkbox */
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--mist);
+  background: transparent;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: border-color .2s, background .2s, transform .15s var(--spring);
+  margin-top: 2px;
+}
+.task-checkbox:hover {
+  border-color: var(--amber);
+  transform: scale(1.15);
+}
+.task-card.completed .task-checkbox {
+  border-color: var(--success);
+  background: var(--success);
+}
+.task-card.completed .task-checkbox::after {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 9px;
+  border: 2px solid var(--ink);
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+/* Task body */
+.task-body { flex: 1; min-width: 0; }
+
+.task-title {
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--chalk);
+  line-height: 1.4;
+  word-break: break-word;
+  transition: color .2s;
+}
+
+/* Task meta row */
+.task-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .72rem;
+  color: var(--chalk-dim);
+  background: var(--ink-3);
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+.meta-pill i { font-size: .8rem; }
+
+/* Overdue date styling */
+.meta-pill.overdue {
+  color: var(--danger);
+  background: rgba(224,92,92,.12);
+}
+
+/* Priority badge */
+.task-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+.task-priority-badge.high   { color: var(--high);   background: rgba(224,92,92,.12); }
+.task-priority-badge.medium { color: var(--medium); background: rgba(240,160,75,.12); }
+.task-priority-badge.low    { color: var(--low);    background: rgba(92,184,160,.12); }
+
+/* Task actions */
+.task-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.task-card:hover .task-actions { opacity: 1; }
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--chalk-faint);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: .95rem;
+  transition: background .15s, color .15s, transform .15s;
+}
+.icon-btn:hover          { background: var(--ink-3); color: var(--chalk); }
+.icon-btn.delete:hover   { background: rgba(224,92,92,.15); color: var(--danger); }
+.icon-btn:active         { transform: scale(.9); }
+
+/* ── 10. Empty State ── */
+.empty-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 60px 20px;
+  color: var(--chalk-faint);
+  text-align: center;
+}
+.empty-state.visible { display: flex; }
+
+.empty-icon {
+  font-size: 3.5rem;
+  line-height: 1;
+  margin-bottom: 8px;
+  opacity: .5;
+}
+.empty-title { font-family: var(--font-display); font-size: 1.2rem; color: var(--chalk-dim); }
+.empty-sub   { font-size: .85rem; }
+
+/* ── 11. Toast Notifications ── */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: var(--ink-2);
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  font-size: .85rem;
+  color: var(--chalk);
+  pointer-events: all;
+
+  animation: toastIn .3s var(--spring) both;
+}
+
+.toast.success i { color: var(--success); }
+.toast.danger  i { color: var(--danger);  }
+.toast.info    i { color: var(--amber);   }
+
+.toast.exit { animation: toastOut .3s var(--ease) both; }
+
+/* ── 12. Keyframe Animations ── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);     }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px) scale(.95); }
+  to   { opacity: 1; transform: translateX(0)     scale(1);  }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to   { opacity: 0; transform: translateX(20px) scale(.95); }
+}
+
+/* ── 13. Scrollbar Styling ── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: var(--chalk-faint); }
+
+/* ── 14. Responsive — Mobile / Tablet ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 240px; }
+
+  /* Sidebar slides off-canvas */
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 8px 0 40px rgba(0,0,0,.5);
+  }
+
+  .main { margin-left: 0; }
+  .menu-toggle { display: grid; }
+
+  /* Compact form */
+  .input-date { flex: 1 1 140px; }
+  .priority-select { flex-wrap: wrap; }
+
+  /* Always-visible task actions on touch */
+  .task-actions { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .topbar { gap: 10px; }
+  .btn-ghost span { display: none; }
+  .form-row { gap: 8px; }
+  .btn-add span { display: none; }
+  .btn-add { padding: 10px 14px; }
+}
+
+/* ── 15. Focus-visible accessibility ring ── */
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}

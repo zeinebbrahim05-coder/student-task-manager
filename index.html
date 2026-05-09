@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Student Task Manager</title>
+
+  <!-- Google Fonts: DM Serif Display (headlines) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <!-- Phosphor Icons (lightweight icon set) -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===================== NOISE OVERLAY ===================== -->
+  <!-- Adds a subtle grain texture for depth — pure CSS trick -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">TaskFlow</span>
+    </div>
+
+    <!-- Filter navigation -->
+    <nav class="sidebar-nav" aria-label="Task filters">
+      <button class="nav-item active" data-filter="all">
+        <i class="ph-bold ph-squares-four"></i>
+        <span>All Tasks</span>
+        <span class="nav-badge" id="badge-all">0</span>
+      </button>
+      <button class="nav-item" data-filter="active">
+        <i class="ph-bold ph-circle-dashed"></i>
+        <span>Active</span>
+        <span class="nav-badge" id="badge-active">0</span>
+      </button>
+      <button class="nav-item" data-filter="completed">
+        <i class="ph-bold ph-check-circle"></i>
+        <span>Completed</span>
+        <span class="nav-badge" id="badge-completed">0</span>
+      </button>
+    </nav>
+
+    <!-- Priority legend -->
+    <div class="sidebar-legend">
+      <p class="legend-title">Priority</p>
+      <div class="legend-item"><span class="dot dot-high"></span> High</div>
+      <div class="legend-item"><span class="dot dot-medium"></span> Medium</div>
+      <div class="legend-item"><span class="dot dot-low"></span> Low</div>
+    </div>
+
+    <!-- Progress ring -->
+    <div class="sidebar-progress">
+      <svg class="progress-ring" viewBox="0 0 80 80" aria-hidden="true">
+        <circle class="ring-track" cx="40" cy="40" r="32" />
+        <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="32" />
+      </svg>
+      <div class="progress-info">
+        <span class="progress-pct" id="progress-pct">0%</span>
+        <span class="progress-label">complete</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="main" id="main">
+
+    <!-- Top header bar -->
+    <header class="topbar">
+      <!-- Mobile menu toggle -->
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle sidebar" aria-expanded="false">
+        <i class="ph-bold ph-list"></i>
+      </button>
+
+      <div class="topbar-meta">
+        <h1 class="page-title">My Tasks</h1>
+        <p class="page-date" id="page-date"></p>
+      </div>
+
+      <!-- Clear completed button -->
+      <button class="btn-ghost" id="clear-completed-btn" title="Clear completed tasks">
+        <i class="ph-bold ph-trash"></i>
+        <span>Clear done</span>
+      </button>
+    </header>
+
+    <!-- ===================== ADD TASK FORM ===================== -->
+    <section class="add-task-section" aria-label="Add new task">
+      <form class="add-task-form" id="add-task-form" novalidate>
+
+        <!-- Task title input -->
+        <div class="input-group input-title">
+          <i class="ph-bold ph-pencil-simple input-icon"></i>
+          <input
+            type="text"
+            id="task-input"
+            class="form-input"
+            placeholder="What do you need to accomplish?"
+            maxlength="120"
+            autocomplete="off"
+            aria-label="Task title"
+            required
+          />
+        </div>
+
+        <!-- Second row: subject + due date + priority + submit -->
+        <div class="form-row">
+          <div class="input-group input-subject">
+            <i class="ph-bold ph-book-open input-icon"></i>
+            <input
+              type="text"
+              id="subject-input"
+              class="form-input"
+              placeholder="Subject / Course"
+              maxlength="40"
+              aria-label="Subject or course"
+            />
+          </div>
+
+          <div class="input-group input-date">
+            <i class="ph-bold ph-calendar-blank input-icon"></i>
+            <input
+              type="date"
+              id="due-date-input"
+              class="form-input"
+              aria-label="Due date"
+            />
+          </div>
+
+          <!-- Priority selector -->
+          <div class="priority-select" role="group" aria-label="Task priority">
+            <button type="button" class="priority-btn active" data-priority="medium" aria-pressed="true">
+              <span class="dot dot-medium"></span> Med
+            </button>
+            <button type="button" class="priority-btn" data-priority="high" aria-pressed="false">
+              <span class="dot dot-high"></span> High
+            </button>
+            <button type="button" class="priority-btn" data-priority="low" aria-pressed="false">
+              <span class="dot dot-low"></span> Low
+            </button>
+          </div>
+
+          <button type="submit" class="btn-add" aria-label="Add task">
+            <i class="ph-bold ph-plus"></i>
+            <span>Add</span>
+          </button>
+        </div>
+
+        <!-- Inline validation message -->
+        <p class="form-error" id="form-error" role="alert" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- ===================== TASK LIST ===================== -->
+    <section class="task-section" aria-label="Task list">
+
+      <!-- Toolbar: sort + search -->
+      <div class="task-toolbar">
+        <div class="input-group search-group">
+          <i class="ph-bold ph-magnifying-glass input-icon"></i>
+          <input
+            type="search"
+            id="search-input"
+            class="form-input form-input--sm"
+            placeholder="Search tasks…"
+            aria-label="Search tasks"
+          />
+        </div>
+
+        <div class="sort-group" role="group" aria-label="Sort tasks">
+          <span class="sort-label">Sort:</span>
+          <select class="sort-select" id="sort-select" aria-label="Sort by">
+            <option value="created">Date added</option>
+            <option value="due">Due date</option>
+            <option value="priority">Priority</option>
+            <option value="alpha">A → Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- The actual task cards get injected here by JS -->
+      <ul class="task-list" id="task-list" aria-label="Tasks" aria-live="polite"></ul>
+
+      <!-- Empty state illustration -->
+      <div class="empty-state" id="empty-state" aria-hidden="true">
+        <div class="empty-icon">
+          <i class="ph-thin ph-clipboard-text"></i>
+        </div>
+        <p class="empty-title">Nothing here yet</p>
+        <p class="empty-sub">Add a task above to get started.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== TOAST CONTAINER ===================== -->
+  <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script src="script.js"></script>
+</body>
+</html>
