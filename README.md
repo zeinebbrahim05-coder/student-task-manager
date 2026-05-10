@@ -15,6 +15,10 @@ A modern and responsive task management web application built using HTML, CSS, a
 * HTML
 * CSS
 * JavaScript
+## Live Demo
+
+[View Live Project](https://zeinebbrahim05-coder.github.io/student-task-manager/)
+
 
 ## Screenshot
 ![Student Task Manager Screenshot](screenshot.png)
